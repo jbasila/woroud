@@ -128,9 +128,16 @@ function build() {
   const all = L.map((l, i) => ({ ...l, src: i }));
   if (!TAP) {
     const at = all.findIndex(l => l.words[0].t >= BREAK.t);
-    all.splice(at, 0, { sec: "", notes: true, words: [{ w: "♪ ♫ ♪", t: BREAK.t }], end: BREAK.end });
+    const t = all[at - 1].words.at(-1).t + 1.2;     // notes start once the chorus has sung out
+    all.splice(at, 0, { sec: "", notes: true, words: [{ w: "♪ ♫ ♪", t }], end: BREAK.end });
   }
   rows = all;
+  // a line takes the stage LEAD before its first word, but never before the previous line's last word has started
+  rows.forEach((l, j) => {
+    const first = l.words[0].t;
+    l.on = j === 0 ? -1 : l.notes ? first
+         : Math.min(first - .05, Math.max(first - LEAD, rows[j - 1].words.at(-1).t + .25));
+  });
   $("col").innerHTML = rows.map((l, i) =>
     `<div class="ln${l.notes ? " notes" : ""}">${l.words.map(w => `<span class="w">${w.w}</span>`).join(" ")}</div>`).join("");
   rows.forEach((l, i) => { l.el = $("col").children[i]; l.spans = [...l.el.children]; });
@@ -149,7 +156,7 @@ function setActive(i, instant) {
   if ($("sec").textContent !== sec) { $("sec").style.opacity = 0; setTimeout(() => { $("sec").textContent = sec; $("sec").style.opacity = .85; }, 250); }
 }
 
-const lineAt = t => { let i = 0; rows.forEach((l, j) => { if (t >= l.words[0].t - LEAD) i = j; }); return i; };
+const lineAt = t => { let i = 0; rows.forEach((l, j) => { if (t >= l.on) i = j; }); return i; };
 const wordEnd = (l, k) => k + 1 < l.words.length ? l.words[k + 1].t : Math.min(l.end, l.words[k].t + 1.2);
 
 function place(ball, span, nextSpan, p) {          // ball arcs from span to nextSpan, p in 0..1
@@ -179,7 +186,7 @@ function frame() {
       });
     });
     const l = rows[i];
-    if (!l.notes && t >= l.words[0].t - LEAD && t < l.end + .3) {
+    if (!l.notes && t >= l.on && t < l.end + .3) {
       const k = l.words.findLastIndex(w => t >= w.t);
       if (k < 0) place(ball, l.spans[0], null, 0);
       else {

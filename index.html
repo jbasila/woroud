@@ -108,6 +108,7 @@ h1{font-family:'Aref Ruqaa',serif;font-weight:700;color:var(--gold);font-size:mi
 const $ = id => document.getElementById(id), a = $("a");
 const TAP = new URLSearchParams(location.search).has("tap");
 const BREAK = { t: 72, end: 95.2 };     // disco break: notes, no words
+const OFFSET = .5;                      // taps land late (reaction time): run the lyrics this far ahead of the audio
 const LEAD = .7;                        // a line scrolls into place this long before its first word
 let L = [], rows = [], active = -1, tapN = 0, tapSeq = [];
 
@@ -168,8 +169,8 @@ function place(ball, span, nextSpan, p) {          // ball arcs from span to nex
 }
 
 function frame() {
-  const t = a.currentTime, ball = $("ball");
-  $("prog").style.width = (a.duration ? t / a.duration * 100 : 0) + "%";
+  const t = a.currentTime + (TAP ? 0 : OFFSET), ball = $("ball");
+  $("prog").style.width = (a.duration ? a.currentTime / a.duration * 100 : 0) + "%";
   if (TAP) tapFrame(t, ball);
   else {
     const i = lineAt(t); setActive(i);

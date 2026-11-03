@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#2a1219">
+<title>يا أحلى ورد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@700&family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#2a1219;--bg2:#4a1d2a;--wine:#8a2c45;--rose:#c0262d;--gold:#e0b871;--ink:#fbf1ea;--dim:#a88a90}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;-webkit-text-size-adjust:100%}
+body{background:var(--bg);background:radial-gradient(ellipse at 50% 30%,var(--bg2) 0%,var(--bg) 72%);color:var(--ink);
+  font-family:Amiri,serif;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+#petals{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.petal{position:absolute;top:-6vh;width:2.2vh;height:1.6vh;border-radius:80% 0 80% 0;background:linear-gradient(135deg,#e46a7a,#a3203a);
+  opacity:.55;animation:fall linear infinite}
+@keyframes fall{to{transform:translate3d(var(--dx),112vh,0) rotate(var(--r))}}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+  text-align:center;transition:opacity .8s}
+.hidden{opacity:0;pointer-events:none}
+h1{font-family:'Aref Ruqaa',serif;font-weight:700;color:var(--gold);font-size:min(17vw,12vh);line-height:1.1}
+.en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:min(6vw,3.4vh);color:var(--ink);margin-top:1.5vh;direction:ltr}
+.by{font-size:min(5.5vw,3vh);color:var(--dim);margin-top:1vh}
+.play{margin-top:6vh;width:min(26vw,15vh);height:min(26vw,15vh);border-radius:50%;border:0;cursor:pointer;
+  background:radial-gradient(circle at 35% 30%,#a8405c,var(--wine));box-shadow:0 0 0 .6vh #e0b87144,0 1vh 4vh #0008;
+  display:flex;align-items:center;justify-content:center;animation:pulse 2.4s ease-in-out infinite}
+.play svg{width:42%;height:42%;margin-left:8%;fill:var(--ink)}
+@keyframes pulse{50%{box-shadow:0 0 0 1.6vh #e0b87122,0 1vh 4vh #0008}}
+.hint{margin-top:3vh;font-size:min(4.4vw,2.4vh);color:var(--dim)}
+/* karaoke */
+.sec{position:absolute;top:max(5vh,env(safe-area-inset-top));font-size:min(5vw,2.8vh);letter-spacing:.05em;color:var(--gold);opacity:.8}
+.stage{position:relative;width:100%;direction:rtl}
+.line{font-weight:700;font-size:min(9.5vw,7vh);line-height:1.7;min-height:2.4em}
+.line span{transition:color .12s}
+.sung{color:var(--gold)} .now{color:#fff;text-shadow:0 0 2vh #e0b871aa} .wait{color:#ffffff66}
+.next{font-size:min(5.6vw,3.8vh);color:var(--dim);min-height:1.8em;margin-top:1vh}
+.ball{position:absolute;left:0;top:0;width:min(4.4vw,3vh);height:min(4.4vw,3vh);border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 35% 35%,#fff6d8,var(--gold) 55%,#a87a35);box-shadow:0 0 2vh #e0b871aa;transition:opacity .25s}
+.count{font-family:'Aref Ruqaa',serif;font-size:min(30vw,18vh);color:var(--gold);line-height:1}
+.notes{font-size:min(16vw,10vh);color:var(--gold);letter-spacing:.3em;animation:sway 1s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-6deg) scale(.95)}to{transform:rotate(6deg) scale(1.05)}}
+.bar{position:absolute;bottom:max(3vh,env(safe-area-inset-bottom));left:0;right:0;display:flex;justify-content:center;align-items:center;gap:14px;direction:ltr}
+.bar button{font:700 16px Amiri,serif;background:#ffffff14;color:var(--ink);border:1px solid #ffffff22;border-radius:999px;padding:10px 18px;cursor:pointer}
+.prog{width:38vw;max-width:260px;height:3px;background:#ffffff22;border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--gold)}
+/* ending */
+.end h1{font-size:min(13vw,9vh)}
+.again{margin-top:5vh;font:700 18px Amiri,serif;background:var(--wine);color:var(--ink);border:0;border-radius:999px;padding:12px 26px;cursor:pointer}
+/* tap mode */
+.tap{position:fixed;inset:auto 0 0 0;height:34vh;background:#8a2c45cc;border:0;color:#fff;font:700 24px system-ui;direction:ltr}
+#out{position:fixed;inset:10vh 5vw;background:#111;color:#cfc;font:12px ui-monospace,monospace;padding:12px;border-radius:8px;direction:ltr;white-space:pre;overflow:auto;user-select:text;-webkit-user-select:text}
+</style>
+</head>
+<body>
+<div id="petals"></div>
+
+<section class="screen" id="start">
+  <h1>يا أحلى ورد</h1>
+  <div class="en">Merry Christmas, Woroud</div>
+  <div class="by">من حنّا · ٢٠٢٦</div>
+  <button class="play" id="go" aria-label="Play"><svg viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z"/></svg></button>
+  <div class="hint">🔊 علّي الصوت</div>
+</section>
+
+<section class="screen hidden" id="sing">
+  <div class="sec" id="sec"></div>
+  <div class="stage" id="stage">
+    <div class="count" id="count"></div>
+    <div class="line" id="line"></div>
+    <div class="next" id="next"></div>
+    <div class="ball" id="ball"></div>
+  </div>
+  <div class="bar"><button id="pause">❚❚</button><div class="prog"><i id="prog"></i></div><button id="restart">⟲</button></div>
+</section>
+
+<section class="screen hidden end" id="end">
+  <h1>ميري كريسماس<br>يا ورود</h1>
+  <div class="by" style="margin-top:3vh">بحبّك · حنّا</div>
+  <button class="again" id="again">مرّة كمان ⟲</button>
+</section>
+
+<audio id="a" src="song.mp3" preload="auto" playsinline></audio>
+
+<script>
+const $ = id => document.getElementById(id), a = $("a");
+const TAP = new URLSearchParams(location.search).has("tap");
+const BREAK = [72, 96];          // disco break: no words
+let L = [], shown = -2;
+
+// falling rose petals
+for (let i = 0; i < 14; i++) {
+  const p = document.createElement("i");
+  p.className = "petal";
+  p.style.left = Math.random() * 100 + "vw";
+  p.style.setProperty("--dx", (Math.random() * 30 - 15) + "vw");
+  p.style.setProperty("--r", (Math.random() * 720 - 360) + "deg");
+  p.style.animationDuration = 9 + Math.random() * 9 + "s";
+  p.style.animationDelay = -Math.random() * 18 + "s";
+  p.style.transform = `scale(${.6 + Math.random() * .8})`;
+  $("petals").appendChild(p);
+}
+
+const show = id => ["start", "sing", "end"].forEach(s => $(s).classList.toggle("hidden", s !== id));
+
+function lineAt(t) {
+  for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].words[0].t - .8) return i;
+  return -1;
+}
+function render(i, t) {
+  shown = i;
+  const inBreak = t >= BREAK[0] && t < BREAK[1] - .8;
+  if (inBreak) { $("line").innerHTML = '<div class="notes">♪ ♫ ♪</div>'; $("next").textContent = L[i + 1] ? L[i + 1].words.map(w => w.w).join(" ") : ""; $("sec").textContent = "🪩"; return; }
+  $("line").innerHTML = i < 0 ? "" : L[i].words.map((w, k) => `<span>${w.w}</span>`).join(" ");
+  $("next").textContent = L[i + 1] ? L[i + 1].words.map(w => w.w).join(" ") : "";
+  $("sec").textContent = i < 0 ? "" : L[i].sec;
+}
+function frame() {
+  const t = a.currentTime;
+  let i = lineAt(t);
+  const inBreak = t >= BREAK[0] && t < BREAK[1] - .8;
+  const key = inBreak ? -3 : i;
+  if (key !== shown) { render(i, t); shown = key; }
+  const first = L.length ? L[0].words[0].t : 8;
+  $("count").textContent = !a.paused && t < first - .3 && t > first - 4.3 ? Math.ceil(first - .3 - t) : "";
+  $("prog").style.width = (a.duration ? t / a.duration * 100 : 0) + "%";
+  const ball = $("ball");
+  if (i >= 0 && !inBreak && t < L[i].end + .4) {
+    const ws = L[i].words, spans = $("line").children, st = $("stage").getBoundingClientRect();
+    const k = ws.findLastIndex(w => t >= w.t);
+    [...spans].forEach((s, j) => s.className = j < k ? "sung" : j === k ? "now" : "wait");
+    const at = j => { const r = spans[Math.max(0, Math.min(j, spans.length - 1))].getBoundingClientRect();
+                      return { x: r.left + r.width / 2 - st.left, y: r.top - st.top }; };
+    let from, to, p = 0, hop = 0;
+    if (k < 0) from = to = at(0);
+    else {
+      const t0 = ws[k].t, t1 = k + 1 < ws.length ? ws[k + 1].t : Math.min(L[i].end, t0 + 1);
+      from = at(k); to = at(k + 1 < ws.length ? k + 1 : k);
+      p = Math.min(1, (t - t0) / Math.max(.05, t1 - t0)); hop = 1;
+    }
+    const h = innerHeight * .055, bw = ball.offsetWidth;
+    ball.style.transform = `translate(${from.x + (to.x - from.x) * p - bw / 2}px,${Math.min(from.y, to.y) - h * .3 - hop * Math.sin(Math.PI * p) * h}px)`;
+    ball.style.opacity = 1;
+  } else ball.style.opacity = 0;
+  requestAnimationFrame(frame);
+}
+
+const start = () => { show("sing"); a.currentTime = 0; a.play().catch(() => {}); };
+$("go").onclick = start;
+$("again").onclick = start;
+$("restart").onclick = () => { a.currentTime = 0; a.play(); };
+$("pause").onclick = () => a.paused ? a.play() : a.pause();
+a.onplay = a.onpause = () => $("pause").textContent = a.paused ? "▶" : "❚❚";
+a.onended = () => { if (!TAP) show("end"); };
+
+fetch("timing.json").then(r => r.json()).then(d => { L = d; requestAnimationFrame(frame); });
+
+// ?tap : tap once per word while the song plays; the timings come out as JSON to paste back
+if (TAP) {
+  const words = () => L.flatMap((l, i) => l.words.map((w, k) => ({ i, k })));
+  let n = 0, seq;
+  const btn = document.createElement("button");
+  btn.className = "tap"; btn.textContent = "TAP each word (space bar works too)";
+  document.body.appendChild(btn);
+  const hit = e => {
+    e.preventDefault();
+    if (!seq) { seq = words(); start(); return; }
+    if (n >= seq.length) return;
+    const { i, k } = seq[n++], t = Math.round(a.currentTime * 100) / 100;
+    L[i].words[k].t = t;
+    if (k === L[i].words.length - 1) L[i].end = Math.round((t + .8) * 100) / 100;
+    btn.textContent = `${n}/${seq.length}: ${L[i].words[k].w} @ ${t}`;
+    if (n === seq.length) dump();
+  };
+  const dump = () => {
+    const o = document.createElement("div"); o.id = "out";
+    o.textContent = JSON.stringify(L, null, 0).replace(/\},\{"sec"/g, '},\n{"sec"');
+    document.body.appendChild(o);
+    navigator.clipboard?.writeText(JSON.stringify(L)).then(() => btn.textContent = "Done: copied to clipboard. Paste it to Claude.");
+  };
+  btn.addEventListener("pointerdown", hit);
+  addEventListener("keydown", e => { if (e.code === "Space") hit(e); if (e.key === "d") dump(); });
+}
+</script>
+</body>
+</html>

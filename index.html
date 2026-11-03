@@ -10,18 +10,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@700&family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#2a1219;--bg2:#4a1d2a;--wine:#8a2c45;--rose:#c0262d;--gold:#e0b871;--ink:#fbf1ea;--dim:#a88a90}
+:root{--bg:#2a1219;--bg2:#4a1d2a;--wine:#8a2c45;--gold:#e8c27a;--ink:#fbf1ea;--dim:#a88a90;--unsung:rgba(255,255,255,.42)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;-webkit-text-size-adjust:100%}
-body{background:var(--bg);background:radial-gradient(ellipse at 50% 30%,var(--bg2) 0%,var(--bg) 72%);color:var(--ink);
+body{background:var(--bg);background:radial-gradient(ellipse at 50% 35%,var(--bg2) 0%,var(--bg) 72%);color:var(--ink);
   font-family:Amiri,serif;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 #petals{position:fixed;inset:0;pointer-events:none;overflow:hidden}
 .petal{position:absolute;top:-6vh;width:2.2vh;height:1.6vh;border-radius:80% 0 80% 0;background:linear-gradient(135deg,#e46a7a,#a3203a);
-  opacity:.55;animation:fall linear infinite}
+  opacity:.45;animation:fall linear infinite}
 @keyframes fall{to{transform:translate3d(var(--dx),112vh,0) rotate(var(--r))}}
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
-  text-align:center;transition:opacity .8s}
+  text-align:center;transition:opacity .9s ease}
 .hidden{opacity:0;pointer-events:none}
 h1{font-family:'Aref Ruqaa',serif;font-weight:700;color:var(--gold);font-size:min(17vw,12vh);line-height:1.1}
 .en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:min(6vw,3.4vh);color:var(--ink);margin-top:1.5vh;direction:ltr}
@@ -32,28 +32,50 @@ h1{font-family:'Aref Ruqaa',serif;font-weight:700;color:var(--gold);font-size:mi
 .play svg{width:42%;height:42%;margin-left:8%;fill:var(--ink)}
 @keyframes pulse{50%{box-shadow:0 0 0 1.6vh #e0b87122,0 1vh 4vh #0008}}
 .hint{margin-top:3vh;font-size:min(4.4vw,2.4vh);color:var(--dim)}
-/* karaoke */
-.sec{position:absolute;top:max(5vh,env(safe-area-inset-top));font-size:min(5vw,2.8vh);letter-spacing:.05em;color:var(--gold);opacity:.8}
-.stage{position:relative;width:100%;direction:rtl}
-.line{font-weight:700;font-size:min(9.5vw,7vh);line-height:1.7;min-height:2.4em}
-.line span{transition:color .12s}
-.sung{color:var(--gold)} .now{color:#fff;text-shadow:0 0 2vh #e0b871aa} .wait{color:#ffffff66}
-.next{font-size:min(5.6vw,3.8vh);color:var(--dim);min-height:1.8em;margin-top:1vh}
-.ball{position:absolute;left:0;top:0;width:min(4.4vw,3vh);height:min(4.4vw,3vh);border-radius:50%;pointer-events:none;opacity:0;
-  background:radial-gradient(circle at 35% 35%,#fff6d8,var(--gold) 55%,#a87a35);box-shadow:0 0 2vh #e0b871aa;transition:opacity .25s}
-.count{font-family:'Aref Ruqaa',serif;font-size:min(30vw,18vh);color:var(--gold);line-height:1}
-.notes{font-size:min(16vw,10vh);color:var(--gold);letter-spacing:.3em;animation:sway 1s ease-in-out infinite alternate}
-@keyframes sway{from{transform:rotate(-6deg) scale(.95)}to{transform:rotate(6deg) scale(1.05)}}
+
+/* ---- karaoke: a scrolling column of lines, the active one centred ---- */
+#sing{padding:0}
+.sec{position:absolute;top:max(5vh,env(safe-area-inset-top));left:0;right:0;font-size:min(5vw,2.8vh);color:var(--gold);opacity:.85;transition:opacity .5s}
+.dots{position:absolute;top:calc(max(5vh,env(safe-area-inset-top)) + 5vh);left:0;right:0;display:flex;justify-content:center;gap:1.4vh;direction:rtl}
+.dots i{width:1.3vh;height:1.3vh;border-radius:50%;background:var(--gold);opacity:.15;transition:opacity .2s,transform .2s}
+.dots i.on{opacity:1;transform:scale(1.25)}
+.view{position:relative;width:100%;height:64vh;overflow:hidden;
+  -webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.col{position:absolute;left:0;right:0;top:0;padding:0 max(16px,4vw);direction:rtl;will-change:transform;
+  transition:transform .75s cubic-bezier(.22,.8,.24,1)}
+.ln{font-weight:700;font-size:min(8.6vw,6.2vh);line-height:1.55;padding:1.1vh 0;text-align:center;
+  opacity:.28;transform:scale(.78);transition:opacity .6s,transform .75s cubic-bezier(.22,.8,.24,1),filter .6s;filter:blur(.4px)}
+.ln.next{opacity:.55;transform:scale(.86);filter:none}
+.ln.on{opacity:1;transform:scale(1);filter:none}
+.ln .w{display:inline-block;padding:0 .16em;
+  background:linear-gradient(to left,var(--gold) 0 calc(var(--p,0)*100%),var(--unsung) calc(var(--p,0)*100%) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.ln.on .w{--unsung:rgba(255,255,255,.62)}
+.ln .w.cur{text-shadow:0 0 1.6vh rgba(232,194,122,.35)}
+.ln.notes{font-size:min(12vw,8vh);letter-spacing:.3em}
+.ln.notes.on .w{animation:sway 1s ease-in-out infinite alternate;--p:1}
+@keyframes sway{from{transform:rotate(-5deg) scale(.95)}to{transform:rotate(5deg) scale(1.05)}}
+.ball{position:absolute;left:0;top:0;width:min(4vw,2.6vh);height:min(4vw,2.6vh);border-radius:50%;pointer-events:none;opacity:0;z-index:2;
+  background:radial-gradient(circle at 35% 35%,#fff6d8,var(--gold) 55%,#a87a35);box-shadow:0 0 1.8vh #e8c27aaa;transition:opacity .3s}
 .bar{position:absolute;bottom:max(3vh,env(safe-area-inset-bottom));left:0;right:0;display:flex;justify-content:center;align-items:center;gap:14px;direction:ltr}
-.bar button{font:700 16px Amiri,serif;background:#ffffff14;color:var(--ink);border:1px solid #ffffff22;border-radius:999px;padding:10px 18px;cursor:pointer}
+.bar button{font:700 16px Amiri,serif;background:#ffffff14;color:var(--ink);border:1px solid #ffffff22;border-radius:999px;padding:8px 16px;cursor:pointer}
 .prog{width:38vw;max-width:260px;height:3px;background:#ffffff22;border-radius:2px;overflow:hidden}
 .prog i{display:block;height:100%;width:0;background:var(--gold)}
-/* ending */
 .end h1{font-size:min(13vw,9vh)}
 .again{margin-top:5vh;font:700 18px Amiri,serif;background:var(--wine);color:var(--ink);border:0;border-radius:999px;padding:12px 26px;cursor:pointer}
-/* tap mode */
-.tap{position:fixed;inset:auto 0 0 0;height:34vh;background:#8a2c45cc;border:0;color:#fff;font:700 24px system-ui;direction:ltr}
-#out{position:fixed;inset:10vh 5vw;background:#111;color:#cfc;font:12px ui-monospace,monospace;padding:12px;border-radius:8px;direction:ltr;white-space:pre;overflow:auto;user-select:text;-webkit-user-select:text}
+
+/* ---- tap mode ---- */
+.tapbar{position:fixed;left:0;right:0;bottom:0;padding:10px 12px max(10px,env(safe-area-inset-bottom));background:#140a0dee;direction:ltr;
+  font:14px system-ui,sans-serif;color:#ddd;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;z-index:5}
+.tapbar button{font:600 14px system-ui;background:#ffffff1a;color:#fff;border:1px solid #ffffff33;border-radius:8px;padding:8px 12px;cursor:pointer}
+.tapbar button.sel{background:var(--wine);border-color:var(--gold)}
+.tapbar .big{flex-basis:100%;height:18vh;font-size:20px;background:#8a2c45aa}
+.tapbar .msg{flex-basis:100%;text-align:center;opacity:.8}
+.tapmode .bar{display:none}
+.tapmode .view{height:52vh;margin-bottom:22vh}
+.ln .w.todo{animation:blink .8s ease-in-out infinite alternate}
+@keyframes blink{to{text-shadow:0 0 2vh #fff}}
+#out{position:fixed;inset:6vh 4vw 30vh;background:#111;color:#cfc;font:12px ui-monospace,monospace;padding:12px;border-radius:8px;direction:ltr;white-space:pre-wrap;word-break:break-all;overflow:auto;user-select:text;-webkit-user-select:text;z-index:6}
 </style>
 </head>
 <body>
@@ -69,12 +91,8 @@ h1{font-family:'Aref Ruqaa',serif;font-weight:700;color:var(--gold);font-size:mi
 
 <section class="screen hidden" id="sing">
   <div class="sec" id="sec"></div>
-  <div class="stage" id="stage">
-    <div class="count" id="count"></div>
-    <div class="line" id="line"></div>
-    <div class="next" id="next"></div>
-    <div class="ball" id="ball"></div>
-  </div>
+  <div class="dots" id="dots"><i></i><i></i><i></i></div>
+  <div class="view" id="view"><div class="col" id="col"></div><div class="ball" id="ball"></div></div>
   <div class="bar"><button id="pause">❚❚</button><div class="prog"><i id="prog"></i></div><button id="restart">⟲</button></div>
 </section>
 
@@ -89,11 +107,11 @@ h1{font-family:'Aref Ruqaa',serif;font-weight:700;color:var(--gold);font-size:mi
 <script>
 const $ = id => document.getElementById(id), a = $("a");
 const TAP = new URLSearchParams(location.search).has("tap");
-const BREAK = [72, 96];          // disco break: no words
-let L = [], shown = -2;
+const BREAK = { t: 72, end: 95.2 };     // disco break: notes, no words
+const LEAD = .7;                        // a line scrolls into place this long before its first word
+let L = [], rows = [], active = -1, tapN = 0, tapSeq = [];
 
-// falling rose petals
-for (let i = 0; i < 14; i++) {
+for (let i = 0; i < 14; i++) {          // falling rose petals
   const p = document.createElement("i");
   p.className = "petal";
   p.style.left = Math.random() * 100 + "vw";
@@ -101,51 +119,76 @@ for (let i = 0; i < 14; i++) {
   p.style.setProperty("--r", (Math.random() * 720 - 360) + "deg");
   p.style.animationDuration = 9 + Math.random() * 9 + "s";
   p.style.animationDelay = -Math.random() * 18 + "s";
-  p.style.transform = `scale(${.6 + Math.random() * .8})`;
   $("petals").appendChild(p);
 }
-
 const show = id => ["start", "sing", "end"].forEach(s => $(s).classList.toggle("hidden", s !== id));
 
-function lineAt(t) {
-  for (let i = L.length - 1; i >= 0; i--) if (t >= L[i].words[0].t - .8) return i;
-  return -1;
+function build() {
+  // the break is a line of its own so the column keeps scrolling through it (not in tap mode)
+  const all = L.map((l, i) => ({ ...l, src: i }));
+  if (!TAP) {
+    const at = all.findIndex(l => l.words[0].t >= BREAK.t);
+    all.splice(at, 0, { sec: "", notes: true, words: [{ w: "♪ ♫ ♪", t: BREAK.t }], end: BREAK.end });
+  }
+  rows = all;
+  $("col").innerHTML = rows.map((l, i) =>
+    `<div class="ln${l.notes ? " notes" : ""}">${l.words.map(w => `<span class="w">${w.w}</span>`).join(" ")}</div>`).join("");
+  rows.forEach((l, i) => { l.el = $("col").children[i]; l.spans = [...l.el.children]; });
+  setActive(0, true);
 }
-function render(i, t) {
-  shown = i;
-  const inBreak = t >= BREAK[0] && t < BREAK[1] - .8;
-  if (inBreak) { $("line").innerHTML = '<div class="notes">♪ ♫ ♪</div>'; $("next").textContent = L[i + 1] ? L[i + 1].words.map(w => w.w).join(" ") : ""; $("sec").textContent = "🪩"; return; }
-  $("line").innerHTML = i < 0 ? "" : L[i].words.map((w, k) => `<span>${w.w}</span>`).join(" ");
-  $("next").textContent = L[i + 1] ? L[i + 1].words.map(w => w.w).join(" ") : "";
-  $("sec").textContent = i < 0 ? "" : L[i].sec;
+
+function setActive(i, instant) {
+  if (i === active) return;
+  active = i;
+  rows.forEach((l, j) => { l.el.classList.toggle("on", j === i); l.el.classList.toggle("next", j === i + 1); });
+  const el = rows[i].el, col = $("col"), vh = $("view").clientHeight;
+  if (instant) col.style.transition = "none";
+  col.style.transform = `translateY(${vh / 2 - (el.offsetTop + el.offsetHeight / 2)}px)`;
+  if (instant) { col.offsetHeight; col.style.transition = ""; }
+  const sec = rows[i].sec ?? "";
+  if ($("sec").textContent !== sec) { $("sec").style.opacity = 0; setTimeout(() => { $("sec").textContent = sec; $("sec").style.opacity = .85; }, 250); }
 }
+
+const lineAt = t => { let i = 0; rows.forEach((l, j) => { if (t >= l.words[0].t - LEAD) i = j; }); return i; };
+const wordEnd = (l, k) => k + 1 < l.words.length ? l.words[k + 1].t : Math.min(l.end, l.words[k].t + 1.2);
+
+function place(ball, span, nextSpan, p) {          // ball arcs from span to nextSpan, p in 0..1
+  const v = $("view").getBoundingClientRect();
+  const c = s => { const r = s.getBoundingClientRect(); return { x: r.left + r.width / 2 - v.left, y: r.top - v.top }; };
+  const f = c(span), to = nextSpan ? c(nextSpan) : f, h = innerHeight * .045, bw = ball.offsetWidth;
+  const x = f.x + (to.x - f.x) * p, y = Math.min(f.y, to.y) - h * .25 - Math.sin(Math.PI * p) * h * (nextSpan ? 1 : 0);
+  ball.style.transform = `translate(${x - bw / 2}px,${y - bw / 2}px)`;
+}
+
 function frame() {
-  const t = a.currentTime;
-  let i = lineAt(t);
-  const inBreak = t >= BREAK[0] && t < BREAK[1] - .8;
-  const key = inBreak ? -3 : i;
-  if (key !== shown) { render(i, t); shown = key; }
-  const first = L.length ? L[0].words[0].t : 8;
-  $("count").textContent = !a.paused && t < first - .3 && t > first - 4.3 ? Math.ceil(first - .3 - t) : "";
+  const t = a.currentTime, ball = $("ball");
   $("prog").style.width = (a.duration ? t / a.duration * 100 : 0) + "%";
-  const ball = $("ball");
-  if (i >= 0 && !inBreak && t < L[i].end + .4) {
-    const ws = L[i].words, spans = $("line").children, st = $("stage").getBoundingClientRect();
-    const k = ws.findLastIndex(w => t >= w.t);
-    [...spans].forEach((s, j) => s.className = j < k ? "sung" : j === k ? "now" : "wait");
-    const at = j => { const r = spans[Math.max(0, Math.min(j, spans.length - 1))].getBoundingClientRect();
-                      return { x: r.left + r.width / 2 - st.left, y: r.top - st.top }; };
-    let from, to, p = 0, hop = 0;
-    if (k < 0) from = to = at(0);
-    else {
-      const t0 = ws[k].t, t1 = k + 1 < ws.length ? ws[k + 1].t : Math.min(L[i].end, t0 + 1);
-      from = at(k); to = at(k + 1 < ws.length ? k + 1 : k);
-      p = Math.min(1, (t - t0) / Math.max(.05, t1 - t0)); hop = 1;
-    }
-    const h = innerHeight * .055, bw = ball.offsetWidth;
-    ball.style.transform = `translate(${from.x + (to.x - from.x) * p - bw / 2}px,${Math.min(from.y, to.y) - h * .3 - hop * Math.sin(Math.PI * p) * h}px)`;
-    ball.style.opacity = 1;
-  } else ball.style.opacity = 0;
+  if (TAP) tapFrame(t, ball);
+  else {
+    const i = lineAt(t); setActive(i);
+    // countdown dots before the very first word
+    const first = rows[0].words[0].t, left = first - t;
+    [...$("dots").children].forEach((d, k) => d.classList.toggle("on", !a.paused && left > 0 && left <= 3 - k));
+    rows.forEach((l, j) => {
+      if (Math.abs(j - i) > 1) return;
+      l.words.forEach((w, k) => {
+        const t0 = w.t, t1 = Math.min(wordEnd(l, k), t0 + .9);
+        const p = t <= t0 ? 0 : t >= t1 ? 1 : (t - t0) / (t1 - t0);
+        l.spans[k].style.setProperty("--p", l.notes ? 1 : p.toFixed(3));
+        l.spans[k].classList.toggle("cur", t >= t0 && t < wordEnd(l, k));
+      });
+    });
+    const l = rows[i];
+    if (!l.notes && t >= l.words[0].t - LEAD && t < l.end + .3) {
+      const k = l.words.findLastIndex(w => t >= w.t);
+      if (k < 0) place(ball, l.spans[0], null, 0);
+      else {
+        const t0 = l.words[k].t, t1 = wordEnd(l, k);
+        place(ball, l.spans[k], l.spans[k + 1], Math.min(1, (t - t0) / Math.max(.05, t1 - t0)));
+      }
+      ball.style.opacity = 1;
+    } else ball.style.opacity = 0;
+  }
   requestAnimationFrame(frame);
 }
 
@@ -156,34 +199,75 @@ $("restart").onclick = () => { a.currentTime = 0; a.play(); };
 $("pause").onclick = () => a.paused ? a.play() : a.pause();
 a.onplay = a.onpause = () => $("pause").textContent = a.paused ? "▶" : "❚❚";
 a.onended = () => { if (!TAP) show("end"); };
+addEventListener("resize", () => { const i = active; active = -1; if (rows.length) setActive(i, true); });
 
-fetch("timing.json").then(r => r.json()).then(d => { L = d; requestAnimationFrame(frame); });
+fetch("timing.json", { cache: "no-store" }).then(r => r.json()).then(d => { L = d; if (TAP) tapSetup(); build(); requestAnimationFrame(frame); });
 
-// ?tap : tap once per word while the song plays; the timings come out as JSON to paste back
-if (TAP) {
-  const words = () => L.flatMap((l, i) => l.words.map((w, k) => ({ i, k })));
-  let n = 0, seq;
-  const btn = document.createElement("button");
-  btn.className = "tap"; btn.textContent = "TAP each word (space bar works too)";
-  document.body.appendChild(btn);
-  const hit = e => {
-    e.preventDefault();
-    if (!seq) { seq = words(); start(); return; }
-    if (n >= seq.length) return;
-    const { i, k } = seq[n++], t = Math.round(a.currentTime * 100) / 100;
-    L[i].words[k].t = t;
-    if (k === L[i].words.length - 1) L[i].end = Math.round((t + .8) * 100) / 100;
-    btn.textContent = `${n}/${seq.length}: ${L[i].words[k].w} @ ${t}`;
-    if (n === seq.length) dump();
-  };
-  const dump = () => {
-    const o = document.createElement("div"); o.id = "out";
-    o.textContent = JSON.stringify(L, null, 0).replace(/\},\{"sec"/g, '},\n{"sec"');
-    document.body.appendChild(o);
-    navigator.clipboard?.writeText(JSON.stringify(L)).then(() => btn.textContent = "Done: copied to clipboard. Paste it to Claude.");
-  };
-  btn.addEventListener("pointerdown", hit);
-  addEventListener("keydown", e => { if (e.code === "Space") hit(e); if (e.key === "d") dump(); });
+/* ---- ?tap : the screen follows your taps, not the clock ---- */
+function tapSetup() {
+  document.body.classList.add("tapmode");
+  show("sing");
+  tapSeq = L.flatMap((l, i) => l.words.map((w, k) => ({ i, k })));
+  const bar = document.createElement("div");
+  bar.className = "tapbar";
+  bar.innerHTML = `<button id="tplay">▶ Play</button>
+    <span>speed</span><button data-r="1" class="sel">1×</button><button data-r=".75">0.75×</button><button data-r=".5">0.5×</button>
+    <button id="tundo">⌫ undo</button><button id="tline">← redo line</button><button id="tdump">done</button>
+    <button class="big" id="tbig">TAP on each word &nbsp;(space bar)</button><div class="msg" id="tmsg">Press Play, then tap as each word starts. Timings stay right at any speed.</div>`;
+  document.body.appendChild(bar);
+  bar.querySelectorAll("button").forEach(b => b.addEventListener("click", () => b.blur()));   // so space never re-clicks a button
+  $("tplay").onclick = () => a.paused ? a.play() : a.pause();
+  a.addEventListener("play", () => $("tplay").textContent = "❚❚ Pause");
+  a.addEventListener("pause", () => $("tplay").textContent = "▶ Play");
+  bar.querySelectorAll("[data-r]").forEach(b => b.onclick = () => {
+    a.playbackRate = +b.dataset.r; a.preservesPitch = true;
+    bar.querySelectorAll("[data-r]").forEach(x => x.classList.toggle("sel", x === b));
+  });
+  $("tbig").addEventListener("pointerdown", e => { e.preventDefault(); tap(); });
+  $("tundo").onclick = undo; $("tline").onclick = redoLine; $("tdump").onclick = dump;
+  addEventListener("keydown", e => {
+    if (e.repeat) return;
+    if (e.code === "Space") { e.preventDefault(); tap(); }
+    else if (e.code === "Backspace") { e.preventDefault(); undo(); }
+    else if (e.code === "ArrowLeft") { e.preventDefault(); redoLine(); }
+    else if (e.code === "Enter") a.paused ? a.play() : a.pause();
+  });
+}
+const msg = s => $("tmsg").textContent = s;
+function tap() {
+  if (a.paused) { a.play(); return; }
+  if (tapN >= tapSeq.length) return;
+  const { i, k } = tapSeq[tapN++], t = Math.round(a.currentTime * 100) / 100;
+  L[i].words[k].t = t; rows[i].words[k].t = t;
+  if (k === L[i].words.length - 1) L[i].end = rows[i].end = Math.round((t + .9) * 100) / 100;
+  msg(`${tapN}/${tapSeq.length}  ${L[i].words[k].w} @ ${t}s`);
+  if (tapN === tapSeq.length) dump();
+}
+function undo() { if (tapN) { tapN--; msg(`undone: next is ${L[tapSeq[tapN].i].words[tapSeq[tapN].k].w}`); } }
+function redoLine() {
+  // back to the start of this line (or the previous one if you're at its start), 2s of run-up
+  const n = Math.min(tapN, tapSeq.length - 1);
+  let i = tapSeq[n].i; if (tapSeq[n].k === 0 && n === tapN && i > 0) i--;
+  tapN = tapSeq.findIndex(s => s.i === i);
+  a.currentTime = Math.max(0, L[i].words[0].t - 2);
+  msg(`redo line ${i + 1}: tap from its first word`);
+}
+function tapFrame(t, ball) {
+  const n = Math.min(tapN, tapSeq.length - 1), { i, k } = tapSeq[n];
+  setActive(i);
+  rows.forEach((l, j) => l.words.forEach((w, q) => {
+    const done = tapSeq.findIndex(s => s.i === j && s.k === q) < tapN;
+    l.spans[q].style.setProperty("--p", done ? 1 : 0);
+    l.spans[q].classList.toggle("todo", !done && j === i && q === k);
+  }));
+  place(ball, rows[i].spans[k], null, 0);
+  ball.style.opacity = tapN < tapSeq.length ? 1 : 0;
+}
+function dump() {
+  const out = L.map(({ sec, words, end }) => ({ sec, words, end }));
+  let o = $("out"); if (!o) { o = document.createElement("div"); o.id = "out"; document.body.appendChild(o); }
+  o.textContent = JSON.stringify(out);
+  navigator.clipboard?.writeText(o.textContent).then(() => msg("Copied to the clipboard: paste it to Claude.")).catch(() => msg("Select the text above and copy it."));
 }
 </script>
 </body>

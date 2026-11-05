@@ -211,12 +211,28 @@ function place(ball, span, nextSpan, p) {          // ball arcs from span to nex
   ball.style.transform = `translate(${x - bw / 2}px,${y - bw / 2}px)`;
 }
 
+// a.currentTime only ticks every ~0.1-0.25s on Safari: run our own clock off the frame timer, slewed to the audio
+let ck = { t: 0, wall: 0, last: -1 };
+function songTime() {
+  const now = performance.now() / 1000, ct = a.currentTime;
+  if (a.paused || a.seeking) { ck = { t: ct, wall: now, last: ct }; return ct; }
+  let est = ck.t + (now - ck.wall) * a.playbackRate;
+  if (ct !== ck.last) {                              // fresh reading from the audio
+    ck.last = ct;
+    const err = ct - est;
+    if (Math.abs(err) > .3) est = ct;                // a jump (seek, restart): snap
+    else est += err * .15;                           // otherwise drift towards it gently
+  }
+  ck.t = est; ck.wall = now;
+  return est;
+}
 function frame() {
-  const t = a.currentTime + (TAP ? 0 : OFFSET), ball = $("ball");
+  const st = TAP ? a.currentTime : songTime();
+  const t = st + (TAP ? 0 : OFFSET), ball = $("ball");
   $("prog").style.width = (a.duration ? a.currentTime / a.duration * 100 : 0) + "%";
   if (TAP) tapFrame(t, ball);
   else {
-    showFx(a.currentTime);
+    showFx(st);
     const i = lineAt(t); setActive(i);
     // countdown dots before the very first word
     const first = rows[0].words[0].t, left = first - t;
@@ -529,15 +545,15 @@ function discoGags(t, k, b, D0, ballY, ballH) {
   if (fb >= 1 && fb < 3) {
     const xin = (1 - ease((fb - 1) / .35)) * W * 1.1 - ease((fb - 2.7) / .3) * W * 1.2;
     for (let i = 0; i < 5; i++) {
-      const kick = (bi + i) % 2 ? 0 : Math.sin(ph * Math.PI);
-      drawDancer(W * (.14 + i * .18) + xin, fy, u, kick, (bi + i) % 2, -.05 * kick, 1);
+      const kick = Math.sin(Math.PI * (bf + i) / 2) ** 2, arm = .5 - .5 * Math.cos(Math.PI * (bf + i + 1));
+      drawDancer(W * (.14 + i * .18) + xin, fy, u, kick, arm, -.05 * kick, 1);
     }
   }
   if (fb >= 7 && fb < 9) {
     const sp = u * 9, q = (fb - 7) / 2;
     for (let i = 0; i < 5; i++) {
       const hop = Math.abs(Math.sin((ph + i * .15) * Math.PI));
-      drawDancer(W + u * 5 + i * sp - q * (W + 7 * sp), fy - hop * 3 * u, u, .25 * hop, (bi + i) % 2, -.12 + .1 * Math.sin(bf * Math.PI), 1);
+      drawDancer(W + u * 5 + i * sp - q * (W + 7 * sp), fy - hop * 3 * u, u, .25 * hop, .5 - .5 * Math.cos(Math.PI * (bf + i)), -.12 + .1 * Math.sin(bf * Math.PI), 1);
     }
   }
   // the neon sign: the dal falls off and dangles (bars 3-4), snaps back (bar 5), letters hop in reading order (bars 5-6)
